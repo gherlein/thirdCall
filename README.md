@@ -1,14 +1,39 @@
-# Welcome to your CDK TypeScript project!
+# Third Call
 
-This is a blank project for TypeScript development with CDK.
+This is my [secondCall](https://github.com/gherlein/secondCall) application with some incremental improvements:
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+##Incremental Improvements
 
-## Useful commands
+I am moving all the Chime and harder AWS service interfaces into a file chill.js to abstract that away. In the future that will become a Lambda Layer.
 
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+##Current Problems
+
+The SMA is throwing a System Error and I'm not sure yet what I am doing wrong.
+
+##Usage
+
+This repo has a made file. You can:
+
+```
+make deploy
+```
+
+and it will deploy the CDK and output some variables, including a phone number. Call that number from your phone.
+
+You can clean up everything but the Chime parts with:
+
+```
+make destroy
+```
+
+You will have to go delete the Phone Numbers, SIP Rules, and SMA yourself. Hoping to fix this in the near future.
+
+##Other Helpers
+
+You can get a tail on the logs with:
+
+```
+make logs
+```
+
+These update fairly slowly so be patient and wait 60 seconds if you think it's not working.
