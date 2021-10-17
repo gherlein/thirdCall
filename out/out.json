@@ -1,0 +1,1 @@
+{"SchemaVersion":"1.0","Actions":[{"Type":"PlayAudio","Parameters":{"AudioSource":{"Type":"S3","BucketName":"thirdcallstack-wavfiles98e3397d-n0rhxybiy9em","Key":"announcements//entrance.wav"}}}]}
