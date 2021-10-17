@@ -2,6 +2,7 @@
   "ThirdCallStack": {
     "inboundPhoneNumber": "+16187050625",
     "thirdCallLambdaLog": "/aws/lambda/ThirdCallStack-thirdCallBEFCCCBB-4C5Aav9isgo8",
+    "thirdCallInfoTable": "ThirdCallStack-callInfo84B39180-1SW39FYBUWUPP",
     "thirdCallLambdaARN": "arn:aws:lambda:us-west-2:497939524935:function:ThirdCallStack-thirdCallBEFCCCBB-4C5Aav9isgo8"
   }
 }

@@ -10,7 +10,6 @@ import sqs = require('@aws-cdk/aws-sqs');
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as ddb from '@aws-cdk/aws-dynamodb';
 
-
 export class ThirdCallStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -37,14 +36,14 @@ export class ThirdCallStack extends cdk.Stack {
       sid: 'SIPMediaApplicationRead',
     });
     wavFileBucketPolicy.addServicePrincipal('voiceconnector.chime.amazonaws.com');
-    /*
-        wavFiles.addToResourcePolicy(wavFileBucketPolicy);
-        new s3deploy.BucketDeployment(this, 'WavDeploy', {
-            sources: [s3deploy.Source.asset('./wav_files')],
-            destinationBucket: wavFiles,
-            contentType: 'audio/wav'
-        });
-    */
+
+    wavFiles.addToResourcePolicy(wavFileBucketPolicy);
+    new s3deploy.BucketDeployment(this, 'WavDeploy', {
+      sources: [s3deploy.Source.asset('./wav_files')],
+      destinationBucket: wavFiles,
+      contentType: 'audio/wav'
+    });
+
     const smaLambdaRole = new iam.Role(this, 'smaLambdaRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -215,6 +214,7 @@ export class ThirdCallStack extends cdk.Stack {
     // put the table name in the lambda environment
     thirdCall.addEnvironment('CALLINFO_TABLE_NAME', callInfoTable.tableName);
 
+    new cdk.CfnOutput(this, 'thirdCallInfoTable', { value: callInfoTable.tableName });
   }
 
 }
