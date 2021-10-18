@@ -36,14 +36,14 @@ export class ThirdCallStack extends cdk.Stack {
       sid: 'SIPMediaApplicationRead',
     });
     wavFileBucketPolicy.addServicePrincipal('voiceconnector.chime.amazonaws.com');
-
     wavFiles.addToResourcePolicy(wavFileBucketPolicy);
-    new s3deploy.BucketDeployment(this, 'WavDeploy', {
-      sources: [s3deploy.Source.asset('./wav_files')],
-      destinationBucket: wavFiles,
-      contentType: 'audio/wav'
-    });
-
+    /*
+        new s3deploy.BucketDeployment(this, 'WavDeploy', {
+          sources: [s3deploy.Source.asset('./wav_files')],
+          destinationBucket: wavFiles,
+          contentType: 'audio/wav'
+        });
+    */
     const smaLambdaRole = new iam.Role(this, 'smaLambdaRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -52,6 +52,7 @@ export class ThirdCallStack extends cdk.Stack {
     const pollyRole = new iam.Role(this, 'pollyRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
+
     const pollyPolicyDoc = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
@@ -108,13 +109,16 @@ export class ThirdCallStack extends cdk.Stack {
     const createSMALambda = new lambda.Function(this, 'createSMALambda', {
       code: lambda.Code.fromAsset("src", { exclude: ["**", "!createChimeResources.py"] }),
       handler: 'createChimeResources.on_event',
-      runtime: lambda.Runtime.PYTHON_3_8,
+      runtime: lambda.Runtime.PYTHON_3_9,
       role: chimeCreateRole,
       timeout: cdk.Duration.seconds(60)
     });
+
+
     const chimeProvider = new custom.Provider(this, 'chimeProvider', {
       onEventHandler: createSMALambda
     });
+
     const inboundSMA = new cdk.CustomResource(this, 'inboundSMA', {
       serviceToken: chimeProvider.serviceToken,
       properties: {
@@ -127,14 +131,17 @@ export class ThirdCallStack extends cdk.Stack {
         'phoneNumberRequired': true
       }
     });
+
     const inboundPhoneNumber = inboundSMA.getAttString('phoneNumber');
+    const smaID = inboundSMA.getAttString("smaID");
+    const sipRuleID = inboundSMA.getAttString("sip_rule_id");
 
     // Write the Telephony Handling Data to the output
     new cdk.CfnOutput(this, 'inboundPhoneNumber', { value: inboundPhoneNumber });
-    new cdk.CfnOutput(this, 'thirdCallLambdaLog', { value: thirdCall.logGroup.logGroupName });
-    new cdk.CfnOutput(this, 'thirdCallLambdaARN', { value: thirdCall.functionArn });
-
-
+    new cdk.CfnOutput(this, 'lambdaLog', { value: thirdCall.logGroup.logGroupName });
+    new cdk.CfnOutput(this, 'lambdaARN', { value: thirdCall.functionArn });
+    new cdk.CfnOutput(this, "smaID", { value: smaID });
+    new cdk.CfnOutput(this, "sipRuleID", { value: sipRuleID });
     /*
         // Create AppSync and database
         const api = new appsync.GraphqlApi(this, 'Api', {

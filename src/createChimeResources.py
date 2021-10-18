@@ -1,9 +1,8 @@
-#  “Copyright Amazon.com Inc. or its affiliates.” 
-import json
 import boto3
 import time
 
 chime = boto3.client('chime')
+cloudformation = boto3.resource('cloudformation')
 
 def getPhoneNumber(retry_limit=10, retries=0):
   if retries >= retry_limit:
@@ -46,84 +45,116 @@ def getPhoneNumber(retry_limit=10, retries=0):
     
   return phoneNumberToOrder
 
-def createSMA (region, name, lambdaArn):
-  sma_create_response = chime.create_sip_media_application(
-    AwsRegion=region,
-    Name=name+'-SMA',
-    Endpoints=[
-        {
-            'LambdaArn': lambdaArn
-        },
-    ]
-  ) 
 
-  print ('sma create: ' + str(sma_create_response))
+def createSMA(region, name, lambdaArn):
+    sma_create_response = chime.create_sip_media_application(
+        AwsRegion=region,
+        Name=name+'-SMA',
+        Endpoints=[
+            {
+                'LambdaArn': lambdaArn
+            },
+        ]
+    )
+    print('sma create: ' + str(sma_create_response))
 
-  return sma_create_response['SipMediaApplication']['SipMediaApplicationId']
+    return sma_create_response['SipMediaApplication']['SipMediaApplicationId']
 
-def createSipRule (name, phoneNumber, smaID, region):
-  print(phoneNumber)
-  sip_rule_response = chime.create_sip_rule(
-    Name=name+'-Rule',
-    TriggerType='ToPhoneNumber',
-    TriggerValue=phoneNumber,
-    Disabled=False,
-    TargetApplications=[
-        {
-            'SipMediaApplicationId': smaID,
-            'Priority': 1,
-            'AwsRegion': region
-        },
-    ]
-  )
-  print('sip rule response: ' + str(sip_rule_response))
-  return sip_rule_response
+
+def createSipRule(name, phoneNumber, smaID, region):
+    print(phoneNumber)
+    sip_rule_response = chime.create_sip_rule(
+        Name=name,
+        TriggerType='ToPhoneNumber',
+        TriggerValue=phoneNumber,
+        Disabled=False,
+        TargetApplications=[
+            {
+                'SipMediaApplicationId': smaID,
+                'Priority': 1,
+                'AwsRegion': region
+            },
+        ]
+    )
+    print('sip rule response: ' + str(sip_rule_response))
+
+    return sip_rule_response
+
 
 def on_event(event, context):
-  print(event)
-  request_type = event['RequestType']
-  if request_type == 'Create': return on_create(event)
-  if request_type == 'Update': return on_update(event)
-  if request_type == 'Delete': return on_delete(event)
-  raise Exception("Invalid request type: %s" % request_type)
+    print(event)
+    request_type = event['RequestType']
+    if request_type == 'Create':
+        return on_create(event)
+    if request_type == 'Update':
+        return on_update(event)
+    if request_type == 'Delete':
+        return on_delete(event)
+    raise Exception("Invalid request type: %s" % request_type)
+
 
 def on_create(event):
-  physical_id = 'smaResources'
-  region = event['ResourceProperties']['region']
-  smaName = event['ResourceProperties']['smaName']
-  lambdaArn = event['ResourceProperties']['lambdaArn']
-  phoneNumberRequired = event['ResourceProperties']['phoneNumberRequired']
-  smaRequired = event['ResourceProperties']['createSMA']
-  smaID = event['ResourceProperties']['smaID']
-  ruleName = event['ResourceProperties']['ruleName']
+    physical_id = 'smaResources'
+    region = event['ResourceProperties']['region']
+    name = event['ResourceProperties']['smaName']
+    lambdaArn = event['ResourceProperties']['lambdaArn']
 
-  if phoneNumberRequired == 'true':
     newPhoneNumber = getPhoneNumber()
-
-  if smaRequired == 'true':
-    smaID = createSMA(region, smaName, lambdaArn)
-
-  print ('smaID: ' + smaID)
-  print ('region: ' + region)
-  print ('phoneNumber: ' + newPhoneNumber)
-  print ('ruleName: ' + ruleName)
-  
-  if phoneNumberRequired == 'true':
+    smaID = createSMA(region, name, lambdaArn)
+    ruleName = str(newPhoneNumber)
     sipRuleResponse = createSipRule(ruleName, newPhoneNumber, smaID, region)
-    createSMAResponse = { 'smaID': smaID, 'phoneNumber': newPhoneNumber}
-  else:
-    createSMAResponse = { 'smaID': smaID }
+    sip_rule_id = sipRuleResponse['SipRule']['SipRuleId']
+    createSMAResponse = {
+        'smaID': smaID, 'phoneNumber': newPhoneNumber, 'sip_rule_id': sip_rule_id}
 
-  return { 'PhysicalResourceId': physical_id, 'Data': createSMAResponse }
+    return {'PhysicalResourceId': physical_id, 'Data': createSMAResponse}
+
 
 def on_update(event):
-  physical_id = event["PhysicalResourceId"]
-  props = event["ResourceProperties"]
-  print("update resource %s with props %s" % (physical_id, props))
-  return { 'PhysicalResourceId': physical_id }  
+    physical_id = event["PhysicalResourceId"]
+    props = event["ResourceProperties"]
+    print("update resource %s with props %s" % (physical_id, props))
+    return {'PhysicalResourceId': physical_id}
 
 
 def on_delete(event):
-  physical_id = event["PhysicalResourceId"]
-  print("delete resource %s" % physical_id)
-  return { 'PhysicalResourceId': physical_id }
+    physical_id = event["PhysicalResourceId"]
+    stack_name = event['ResourceProperties']['smaName']
+    stack = cloudformation.Stack(stack_name)
+
+    outputs = {output["OutputKey"]: output["OutputValue"]
+               for output in stack.outputs}
+
+    print(outputs)
+    phone_number = outputs['phoneNumber']
+    sma_id = outputs['smaID']
+    sip_rule_id = outputs['sipRuleID']
+
+    disable_rule_response = chime.update_sip_rule(
+        SipRuleId=sip_rule_id,
+        Disabled=True,
+        Name=phone_number
+    )
+    print(disable_rule_response)
+
+    delete_rule_response = chime.delete_sip_rule(
+        SipRuleId=sip_rule_id
+    )
+
+    print(delete_rule_response)
+
+    delete_sma_response = chime.delete_sip_media_application(
+        SipMediaApplicationId=sma_id
+    )
+
+    print(delete_sma_response)
+
+    delete_phone_number_response = chime.delete_phone_number(
+        PhoneNumberId=phone_number
+    )
+
+    print(delete_phone_number_response)
+
+    print("delete resource %s" % physical_id)
+
+    return {'PhysicalResourceId': physical_id}
