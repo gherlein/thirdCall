@@ -36,14 +36,15 @@ export class ThirdCallStack extends cdk.Stack {
       sid: 'SIPMediaApplicationRead',
     });
     wavFileBucketPolicy.addServicePrincipal('voiceconnector.chime.amazonaws.com');
-
     wavFiles.addToResourcePolicy(wavFileBucketPolicy);
+
+    /*
     new s3deploy.BucketDeployment(this, 'WavDeploy', {
       sources: [s3deploy.Source.asset('./wav_files')],
       destinationBucket: wavFiles,
       contentType: 'audio/wav'
     });
-
+    */
     const smaLambdaRole = new iam.Role(this, 'smaLambdaRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
