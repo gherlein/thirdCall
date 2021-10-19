@@ -80,7 +80,7 @@ export class ThirdCallStack extends cdk.Stack {
 
     // create the lambda function that does the call
     const thirdCall = new lambda.Function(this, 'thirdCall', {
-      code: lambda.Code.fromAsset("src", { exclude: ["createChimeResources.py"] }),
+      code: lambda.Code.fromAsset("src", { exclude: ["README.md"] }),
       handler: 'thirdCall.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       environment: {
@@ -110,9 +110,9 @@ export class ThirdCallStack extends cdk.Stack {
 
 
     // create the lambda for CDK custom resource to deploy SMA, etc.
-    const createSMALambda = new lambda.Function(this, 'createSMALambda', {
-      code: lambda.Code.fromAsset("src", { exclude: ["**", "!createChimeResources.py"] }),
-      handler: 'createChimeResources.on_event',
+    const chimeCDKsupportLambda = new lambda.Function(this, 'chimeCDKsupportLambda', {
+      code: lambda.Code.fromAsset("chime-cdk-support", { exclude: ["README.md"] }),
+      handler: 'chime-cdk-support.on_event',
       runtime: lambda.Runtime.PYTHON_3_9,
       role: chimeCreateRole,
       timeout: cdk.Duration.seconds(60)
@@ -120,7 +120,7 @@ export class ThirdCallStack extends cdk.Stack {
 
 
     const chimeProvider = new custom.Provider(this, 'chimeProvider', {
-      onEventHandler: createSMALambda
+      onEventHandler: chimeCDKsupportLambda
     });
 
     const inboundSMA = new cdk.CustomResource(this, 'inboundSMA', {

@@ -1,0 +1,4 @@
+[submodule "chime-cdk-support"]
+	branch = old-phone-create
+	path = chime-cdk-support
+	url = https://github.com/gherlein/chime-cdk-support.git
