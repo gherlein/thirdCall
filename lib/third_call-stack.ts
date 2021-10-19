@@ -97,7 +97,11 @@ export class ThirdCallStack extends cdk.Stack {
             resources: ['*'],
             actions: ['chime:*',
               'lambda:GetPolicy',
-              'lambda:AddPermission']
+              'lambda:AddPermission',
+              'cloudformation:DescribeStacks',
+              'cloudformation:DescribeStackEvents',
+              'cloudformation:DescribeStackResource',
+              'cloudformation:DescribeStackResources',]
           })]
         })
       },
@@ -124,8 +128,8 @@ export class ThirdCallStack extends cdk.Stack {
       properties: {
         'lambdaArn': thirdCall.functionArn,
         'region': this.region,
-        'smaName': this.stackName + '-inbound',
-        'ruleName': this.stackName + '-inbound',
+        'smaName': this.stackName,
+        'ruleName': this.stackName,
         'createSMA': true,
         'smaID': '',
         'phoneNumberRequired': true
@@ -135,6 +139,8 @@ export class ThirdCallStack extends cdk.Stack {
     const inboundPhoneNumber = inboundSMA.getAttString('phoneNumber');
     const smaID = inboundSMA.getAttString("smaID");
     const sipRuleID = inboundSMA.getAttString("sip_rule_id");
+    const sipRuleName = inboundSMA.getAttString("Name");
+
 
     // Write the Telephony Handling Data to the output
     new cdk.CfnOutput(this, 'inboundPhoneNumber', { value: inboundPhoneNumber });

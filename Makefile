@@ -6,6 +6,11 @@ DUMMY     := $(shell touch ${CDK-OUT})
 LAMBDALOG := $(shell jq .${STACKNAME}.thirdCallLambdaLog ${CDK-OUT})
 LAMBDAARN := $(shell jq .${STACKNAME}.thirdCallLambdaARN ${CDK-OUT})
 TABLENAME := $(shell jq .${STACKNAME}.thirdCallInfoTable ${CDK-OUT})
+SMAID     := $(shell jq .${STACKNAME}.smaID ${CDK-OUT})
+RULEID    := $(shell jq .${STACKNAME}.sipRuleID ${CDK-OUT})
+SMANUM    := $(shell jq .${STACKNAME}.inboundPhoneNumber ${CDK-OUT})
+SMANAME   := ${PHONENUM} # this is a hack!  Need to pass it back from the python create script
+
 MODULES   := @aws-cdk/core @aws-cdk/aws-appsync @aws-cdk/aws-lambda @aws-cdk/aws-dynamodb @aws-cdk/aws-s3 @aws-cdk/aws-s3-deployment @aws-cdk/aws-iam @aws-cdk/custom-resources @aws-cdk/aws-sqs
 
 IN_EVENT  := ./test/in.json
@@ -54,3 +59,24 @@ install-tools:
 
 modules:
 	npm install ${MODULES} 	
+
+
+delete-chime: 
+	make delete-rule
+	make delete-phone 
+	make delete-sma 
+	-aws chime list-sip-media-applications --no-cli-pager
+	-aws chime list-sip-rules --no-cli-pager
+	-aws chime list-phone-numbers --no-cli-pager
+
+delete-sma:
+	-aws chime delete-sip-media-application --sip-media-application-id ${SMAID} --no-cli-pager
+
+delete-phone:
+	-aws chime delete-phone-number --phone-number-id ${SMANUM} --no-cli-pager
+
+delete-rule:
+	-aws chime update-sip-rule --sip-rule-id  ${RULEID} --name ${SMANAME} --disabled --no-cli-pager
+	-aws chime delete-sip-rule --sip-rule-id  ${RULEID} --no-cli-pager
+
+
