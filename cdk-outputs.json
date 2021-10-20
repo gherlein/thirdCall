@@ -1,10 +1,10 @@
 {
   "ThirdCallStack": {
-    "sipRuleID": "a483326e-9189-4f05-a94d-97d0bb891bf0",
-    "inboundPhoneNumber": "+16182800107",
-    "smaID": "e7cd53cf-f928-41a1-90bc-3be4fd553b5a",
-    "lambdaARN": "arn:aws:lambda:us-west-2:497939524935:function:ThirdCallStack-thirdCallBEFCCCBB-ReuTFmr9w2Hm",
-    "thirdCallInfoTable": "ThirdCallStack-callInfo84B39180-G7XUG774AQ5",
-    "lambdaLog": "/aws/lambda/ThirdCallStack-thirdCallBEFCCCBB-ReuTFmr9w2Hm"
+    "sipRuleID": "532015b8-94a6-44eb-bbff-f72f79c19bbd",
+    "inboundPhoneNumber": "+16187050150",
+    "smaID": "62ce28a4-2316-4b0a-a769-daa52ffe9ae9",
+    "lambdaARN": "arn:aws:lambda:us-west-2:497939524935:function:ThirdCallStack-thirdCallBEFCCCBB-8fk15EdmtmQk",
+    "thirdCallInfoTable": "ThirdCallStack-callInfo84B39180-1HD6T7SNQ961C",
+    "lambdaLog": "/aws/lambda/ThirdCallStack-thirdCallBEFCCCBB-8fk15EdmtmQk"
   }
 }

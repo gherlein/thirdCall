@@ -1,3 +1,7 @@
 [submodule "chime-cdk-support"]
 	path = chime-cdk-support
-	url = https://github.com/gherlein/chime-cdk-support.git
+	url = git@github.com:gherlein/chime-cdk-support.git
+
+[submodule "chill"]
+	path = chill
+	url = git@github.com:gherlein/chill.git

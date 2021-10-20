@@ -79,4 +79,7 @@ delete-rule:
 	-aws chime update-sip-rule --sip-rule-id  ${RULEID} --name ${SMANAME} --disabled --no-cli-pager
 	-aws chime delete-sip-rule --sip-rule-id  ${RULEID} --no-cli-pager
 
+update:
+	git submodule update --remote
+
 
