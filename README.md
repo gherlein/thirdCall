@@ -20,7 +20,7 @@ The "make destroy" will invoke a custom resource from chime-cdk-support. At this
 I moved all the Chime and harder AWS service interfaces into a submodule "chill" to abstract away those complexities. In the future that will become a Lambda Layer. You can see more about
 the Chill library [here](https://github.com/gherlein/chill/).
 
-## Cloning to get Submodiles Automatically
+## Cloning to get Submodules Automatically
 
 To get all the code for this project, clone the repo with this:
 
