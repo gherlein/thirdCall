@@ -1,18 +1,24 @@
 # Third Call
 
-This is my [secondCall](https://github.com/gherlein/secondCall) application with some incremental improvements:
+This an incremental improvement to [secondCall](https://github.com/gherlein/secondCall).
 
-##Incremental Improvements
+## Incremental Improvements
 
-I am moving all the Chime and harder AWS service interfaces into a file chill.js to abstract that away. In the future that will become a Lambda Layer.
+I moved all the Chime and harder AWS service interfaces into a submodule "chill" to abstract away those complexities. In the future that will become a Lambda Layer.
 
-##Current Problems
+## Cloning to get Submodiles Automatically
 
-The SMA is throwing a System Error and I'm not sure yet what I am doing wrong.
+To get all the code for this project, clone the repo with this:
 
-##Usage
+```
+git clone --recurse-submodules --remote-submodules git@github.com:gherlein/thirdCall.git
+```
 
-This repo has a made file. You can:
+That will pull the main repo and checkout the submodules in one step.
+
+## Usage
+
+This repo has a Makefile. You can:
 
 ```
 make deploy
@@ -20,13 +26,17 @@ make deploy
 
 and it will deploy the CDK and output some variables, including a phone number. Call that number from your phone.
 
-You can clean up everything but the Chime parts with:
+You can clean up everything with:
 
 ```
 make destroy
 ```
 
-You will have to go delete the Phone Numbers, SIP Rules, and SMA yourself. Hoping to fix this in the near future.
+However, the submodule "chime-cdk-support" is not yet fully supporting deletion of Chime resources. The makefule supports an extra step to delete he Phone Numbers, SIP Rules, and SMA by:
+
+```
+make delete-chime
+```
 
 ##Other Helpers
 
