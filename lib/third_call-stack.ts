@@ -9,6 +9,7 @@ import sqs = require('@aws-cdk/aws-sqs');
 
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as ddb from '@aws-cdk/aws-dynamodb';
+import { FromCloudFormationPropertyObject } from '@aws-cdk/core/lib/cfn-parse';
 
 export class ThirdCallStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -108,12 +109,22 @@ export class ThirdCallStack extends cdk.Stack {
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")]
     });
 
+    /*
+        // create the lambda for CDK custom resource to deploy SMA, etc.
+        const chimeCDKsupportLambda = new lambda.Function(this, 'chimeCDKsupportLambda', {
+          code: lambda.Code.fromAsset("chime-cdk-support", { exclude: ["README.md"] }),
+          handler: 'chime-cdk-support.on_event',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          role: chimeCreateRole,
+          timeout: cdk.Duration.seconds(60)
+        });
+    */
 
     // create the lambda for CDK custom resource to deploy SMA, etc.
     const chimeCDKsupportLambda = new lambda.Function(this, 'chimeCDKsupportLambda', {
-      code: lambda.Code.fromAsset("chime-cdk-support", { exclude: ["README.md"] }),
-      handler: 'chime-cdk-support.on_event',
-      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset("lambda", { exclude: ["README.md"] }),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
       role: chimeCreateRole,
       timeout: cdk.Duration.seconds(60)
     });
@@ -123,31 +134,41 @@ export class ThirdCallStack extends cdk.Stack {
       onEventHandler: chimeCDKsupportLambda
     });
 
+
+    const chimeProviderProperties = {
+      'lambdaArn': thirdCall.functionArn,
+      'region': this.region,
+      'smaName': this.stackName,
+      'ruleName': this.stackName,
+      'createSMA': true,
+      // 'smaID': '',
+      'phoneNumberRequired': true
+    }
+    //console.log(chimeProviderProperties);
+
     const inboundSMA = new cdk.CustomResource(this, 'inboundSMA', {
       serviceToken: chimeProvider.serviceToken,
-      properties: {
-        'lambdaArn': thirdCall.functionArn,
-        'region': this.region,
-        'smaName': this.stackName,
-        'ruleName': this.stackName,
-        'createSMA': true,
-        'smaID': '',
-        'phoneNumberRequired': true
-      }
+      properties: chimeProviderProperties,
     });
 
+    // these are the attributes returned from the custom resource
+    // we really need type definitions for these
     const inboundPhoneNumber = inboundSMA.getAttString('phoneNumber');
     const smaID = inboundSMA.getAttString("smaID");
-    const sipRuleID = inboundSMA.getAttString("sip_rule_id");
-    const sipRuleName = inboundSMA.getAttString("Name");
+    const sipRuleID = inboundSMA.getAttString("sipRuleID");
+    const sipRuleName = inboundSMA.getAttString("sipRuleName");
 
 
     // Write the Telephony Handling Data to the output
+    new cdk.CfnOutput(this, 'region', { value: this.region });
     new cdk.CfnOutput(this, 'inboundPhoneNumber', { value: inboundPhoneNumber });
     new cdk.CfnOutput(this, 'lambdaLog', { value: thirdCall.logGroup.logGroupName });
     new cdk.CfnOutput(this, 'lambdaARN', { value: thirdCall.functionArn });
     new cdk.CfnOutput(this, "smaID", { value: smaID });
     new cdk.CfnOutput(this, "sipRuleID", { value: sipRuleID });
+    new cdk.CfnOutput(this, "sipRuleName", { value: sipRuleName });
+    new cdk.CfnOutput(this, 'providerLog', { value: thirdCall.logGroup.logGroupName });
+
     /*
         // Create AppSync and database
         const api = new appsync.GraphqlApi(this, 'Api', {

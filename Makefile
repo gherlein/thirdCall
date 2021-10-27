@@ -20,13 +20,15 @@ QUOTE     := ' # this is a hack to get the command line to render correctly for 
 
 init:
 	cdk init --language=typescript
-	
+
 build:
 	npm run build
 
-deploy:
+deploy: build
 	cdk deploy --outputs-file ./cdk-outputs.json
 
+keepdeploy: build
+	cdk deploy --outputs-file ./cdk-outputs.json --no-rollback
 
 logs:
 	aws logs tail $(LAMBDALOG) --follow --format short 

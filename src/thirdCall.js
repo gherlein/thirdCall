@@ -16,7 +16,7 @@ const toWords = new ToWords({
 });
 
 
-exports.handler = async (event, context, callback) => {
+exports.handler = async (event: CloudFormation, context, callback) => {
   console.log(JSON.stringify(event));
   let actions;
 

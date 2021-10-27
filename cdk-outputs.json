@@ -1,10 +1,1 @@
-{
-  "ThirdCallStack": {
-    "sipRuleID": "3ab6e17f-4215-422a-adfe-9737f427ba1c",
-    "inboundPhoneNumber": "+16187050169",
-    "smaID": "b2629c41-adc9-49bb-b5d7-22edc04d7b28",
-    "lambdaARN": "arn:aws:lambda:us-west-2:497939524935:function:ThirdCallStack-thirdCallBEFCCCBB-MzIFeG1eaoY2",
-    "thirdCallInfoTable": "ThirdCallStack-callInfo84B39180-YPZXUB5E5RMQ",
-    "lambdaLog": "/aws/lambda/ThirdCallStack-thirdCallBEFCCCBB-MzIFeG1eaoY2"
-  }
-}
+{}
