@@ -3,7 +3,7 @@
 //const numberToWords = require('number-to-words');
 
 const AWS = require('aws-sdk');
-const chill = require('../chill/chill.js');
+const chill = require('./chill/chill.js');
 const { ToWords } = require('to-words');
 
 const toWords = new ToWords({

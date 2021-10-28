@@ -142,8 +142,7 @@ export class ThirdCallStack extends cdk.Stack {
       region: this.region,
       smaName: this.stackName,
       sipRuleName: this.stackName,
-      sipTriggerType: ''
-      createSMA: true,
+      sipTriggerType: 'ToPhoneNumber',
       phoneNumberRequired: true,
       phoneAreaCode: '505',
       phoneState: '',
@@ -164,6 +163,7 @@ export class ThirdCallStack extends cdk.Stack {
     const smaID = inboundSMA.getAttString("smaID");
     const sipRuleID = inboundSMA.getAttString("sipRuleID");
     const sipRuleName = inboundSMA.getAttString("sipRuleName");
+    const phoneID = inboundSMA.getAttString("phoneID");
 
     // Write the Telephony Handling Data to the output
     new cdk.CfnOutput(this, 'region', { value: this.region });
@@ -171,6 +171,7 @@ export class ThirdCallStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'lambdaLog', { value: thirdCall.logGroup.logGroupName });
     new cdk.CfnOutput(this, 'lambdaARN', { value: thirdCall.functionArn });
     new cdk.CfnOutput(this, "smaID", { value: smaID });
+    new cdk.CfnOutput(this, "phoneID", { value: phoneID });
     new cdk.CfnOutput(this, "sipRuleID", { value: sipRuleID });
     new cdk.CfnOutput(this, "sipRuleName", { value: sipRuleName });
     new cdk.CfnOutput(this, 'providerLog', { value: thirdCall.logGroup.logGroupName });
