@@ -25,10 +25,13 @@ build:
 	npm run build
 
 deploy: build
-	cdk deploy --outputs-file ./cdk-outputs.json
+	cdk deploy --outputs-file ./cdk-outputs.json --require-approval never
 
 keepdeploy: build
-	cdk deploy --outputs-file ./cdk-outputs.json --no-rollback
+	cdk deploy --outputs-file ./cdk-outputs.json --no-rollback --require-approval never
+
+destroy:
+	cdk destroy --force
 
 logs:
 	aws logs tail $(LAMBDALOG) --follow --format short 
@@ -52,8 +55,6 @@ invoke:
 cleardb:
 	aws dynamodb delete-item --table-name ${TABLENAME} --key ${QUOTE}${DELKEY}${QUOTE}
 
-destroy:
-	cdk destroy
 
 install-tools:
 	sudo apt install -y jq	

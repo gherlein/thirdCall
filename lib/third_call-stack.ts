@@ -10,6 +10,8 @@ import sqs = require('@aws-cdk/aws-sqs');
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as ddb from '@aws-cdk/aws-dynamodb';
 import { FromCloudFormationPropertyObject } from '@aws-cdk/core/lib/cfn-parse';
+import { ChimeClient } from '@aws-sdk/client-chime';
+import { stringify } from 'querystring';
 
 export class ThirdCallStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -126,38 +128,42 @@ export class ThirdCallStack extends cdk.Stack {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       role: chimeCreateRole,
-      timeout: cdk.Duration.seconds(60)
+      timeout: cdk.Duration.seconds(120),
     });
-
 
     const chimeProvider = new custom.Provider(this, 'chimeProvider', {
       onEventHandler: chimeCDKsupportLambda
     });
 
-
+    // need type declarations
+    // https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
     const chimeProviderProperties = {
-      'lambdaArn': thirdCall.functionArn,
-      'region': this.region,
-      'smaName': this.stackName,
-      'ruleName': this.stackName,
-      'createSMA': true,
-      // 'smaID': '',
-      'phoneNumberRequired': true
+      lambdaArn: thirdCall.functionArn,
+      region: this.region,
+      smaName: this.stackName,
+      sipRuleName: this.stackName,
+      sipTriggerType: ''
+      createSMA: true,
+      phoneNumberRequired: true,
+      phoneAreaCode: '505',
+      phoneState: '',
+      phoneCountry: '',
+      phoneNumberType: 'SipMediaApplicationDialIn', // BusinessCalling | VoiceConnector | SipMediaApplicationDialIn
+      phoneNumberTollFreePrefix: '',
     }
-    //console.log(chimeProviderProperties);
+    console.log(chimeProviderProperties);
+    console.log(chimeProvider.serviceToken);
 
     const inboundSMA = new cdk.CustomResource(this, 'inboundSMA', {
       serviceToken: chimeProvider.serviceToken,
       properties: chimeProviderProperties,
     });
 
-    // these are the attributes returned from the custom resource
-    // we really need type definitions for these
+    // these are the attributes returned from the custom resource!
     const inboundPhoneNumber = inboundSMA.getAttString('phoneNumber');
     const smaID = inboundSMA.getAttString("smaID");
     const sipRuleID = inboundSMA.getAttString("sipRuleID");
     const sipRuleName = inboundSMA.getAttString("sipRuleName");
-
 
     // Write the Telephony Handling Data to the output
     new cdk.CfnOutput(this, 'region', { value: this.region });

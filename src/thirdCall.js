@@ -2,6 +2,7 @@
 
 //const numberToWords = require('number-to-words');
 
+const AWS = require('aws-sdk');
 const chill = require('../chill/chill.js');
 const { ToWords } = require('to-words');
 
@@ -16,7 +17,7 @@ const toWords = new ToWords({
 });
 
 
-exports.handler = async (event: CloudFormation, context, callback) => {
+exports.handler = async (event, context, callback) => {
   console.log(JSON.stringify(event));
   let actions;
 
