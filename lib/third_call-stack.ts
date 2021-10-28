@@ -124,7 +124,7 @@ export class ThirdCallStack extends cdk.Stack {
 
     // create the lambda for CDK custom resource to deploy SMA, etc.
     const chimeCDKsupportLambda = new lambda.Function(this, 'chimeCDKsupportLambda', {
-      code: lambda.Code.fromAsset("lambda", { exclude: ["README.md"] }),
+      code: lambda.Code.fromAsset("../test", { exclude: ["README.md"] }),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       role: chimeCreateRole,
@@ -162,7 +162,6 @@ export class ThirdCallStack extends cdk.Stack {
     const inboundPhoneNumber = inboundSMA.getAttString('phoneNumber');
     const smaID = inboundSMA.getAttString("smaID");
     const sipRuleID = inboundSMA.getAttString("sipRuleID");
-    const sipRuleName = inboundSMA.getAttString("sipRuleName");
     const phoneID = inboundSMA.getAttString("phoneID");
 
     // Write the Telephony Handling Data to the output
@@ -173,7 +172,7 @@ export class ThirdCallStack extends cdk.Stack {
     new cdk.CfnOutput(this, "smaID", { value: smaID });
     new cdk.CfnOutput(this, "phoneID", { value: phoneID });
     new cdk.CfnOutput(this, "sipRuleID", { value: sipRuleID });
-    new cdk.CfnOutput(this, "sipRuleName", { value: sipRuleName });
+    new cdk.CfnOutput(this, "sipRuleName", { value: chimeProviderProperties.sipRuleName });
     new cdk.CfnOutput(this, 'providerLog', { value: thirdCall.logGroup.logGroupName });
 
     /*

@@ -21,7 +21,7 @@ QUOTE     := ' # this is a hack to get the command line to render correctly for 
 init:
 	cdk init --language=typescript
 
-build:
+build: clean
 	npm run build
 
 deploy: build
@@ -42,6 +42,7 @@ logs-info:
 clean:
 	-rm *~
 	-rm cdk-outputs.json
+	-rm lib/*.js
 
 watch:
 	saw watch $(LAMBDALOG) --filter INFO --expand
