@@ -113,7 +113,7 @@ export class ThirdCallStack extends cdk.Stack {
 
     /*
         // create the lambda for CDK custom resource to deploy SMA, etc.
-        const chimeCDKsupportLambda = new lambda.Function(this, 'chimeCDKsupportLambda', {
+        const chimeProviderLamba = new lambda.Function(this, 'chimeProviderLamba', {
           code: lambda.Code.fromAsset("chime-cdk-support", { exclude: ["README.md"] }),
           handler: 'chime-cdk-support.on_event',
           runtime: lambda.Runtime.PYTHON_3_9,
@@ -123,7 +123,7 @@ export class ThirdCallStack extends cdk.Stack {
     */
 
     // create the lambda for CDK custom resource to deploy SMA, etc.
-    const chimeCDKsupportLambda = new lambda.Function(this, 'chimeCDKsupportLambda', {
+    const chimeProviderLamba = new lambda.Function(this, 'chimeProviderLamba', {
       code: lambda.Code.fromAsset("../test", { exclude: ["README.md"] }),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
@@ -132,7 +132,7 @@ export class ThirdCallStack extends cdk.Stack {
     });
 
     const chimeProvider = new custom.Provider(this, 'chimeProvider', {
-      onEventHandler: chimeCDKsupportLambda
+      onEventHandler: chimeProviderLamba;
     });
 
     // need type declarations
@@ -169,6 +169,7 @@ export class ThirdCallStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'inboundPhoneNumber', { value: inboundPhoneNumber });
     new cdk.CfnOutput(this, 'lambdaLog', { value: thirdCall.logGroup.logGroupName });
     new cdk.CfnOutput(this, 'lambdaARN', { value: thirdCall.functionArn });
+    new cdk.CfnOutput(this, 'providerLog', { value: chimeProviderLamba.logGroup.logGroupName });
     new cdk.CfnOutput(this, "smaID", { value: smaID });
     new cdk.CfnOutput(this, "phoneID", { value: phoneID });
     new cdk.CfnOutput(this, "sipRuleID", { value: sipRuleID });
