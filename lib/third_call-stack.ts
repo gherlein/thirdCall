@@ -132,7 +132,7 @@ export class ThirdCallStack extends cdk.Stack {
     });
 
     const chimeProvider = new custom.Provider(this, 'chimeProvider', {
-      onEventHandler: chimeProviderLamba;
+      onEventHandler: chimeProviderLamba,
     });
 
     // need type declarations
@@ -169,12 +169,11 @@ export class ThirdCallStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'inboundPhoneNumber', { value: inboundPhoneNumber });
     new cdk.CfnOutput(this, 'lambdaLog', { value: thirdCall.logGroup.logGroupName });
     new cdk.CfnOutput(this, 'lambdaARN', { value: thirdCall.functionArn });
-    new cdk.CfnOutput(this, 'providerLog', { value: chimeProviderLamba.logGroup.logGroupName });
+    new cdk.CfnOutput(this, 'chimeProviderLog', { value: chimeProviderLamba.logGroup.logGroupName });
     new cdk.CfnOutput(this, "smaID", { value: smaID });
     new cdk.CfnOutput(this, "phoneID", { value: phoneID });
     new cdk.CfnOutput(this, "sipRuleID", { value: sipRuleID });
     new cdk.CfnOutput(this, "sipRuleName", { value: chimeProviderProperties.sipRuleName });
-    new cdk.CfnOutput(this, 'providerLog', { value: thirdCall.logGroup.logGroupName });
 
     /*
         // Create AppSync and database
