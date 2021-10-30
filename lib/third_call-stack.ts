@@ -165,15 +165,42 @@ export class ThirdCallStack extends cdk.Stack {
     const phoneID = inboundSMA.getAttString("phoneID");
 
     // Write the Telephony Handling Data to the output
-    new cdk.CfnOutput(this, 'region', { value: this.region });
-    new cdk.CfnOutput(this, 'inboundPhoneNumber', { value: inboundPhoneNumber });
-    new cdk.CfnOutput(this, 'lambdaLog', { value: thirdCall.logGroup.logGroupName });
-    new cdk.CfnOutput(this, 'lambdaARN', { value: thirdCall.functionArn });
-    new cdk.CfnOutput(this, 'chimeProviderLog', { value: chimeProviderLamba.logGroup.logGroupName });
-    new cdk.CfnOutput(this, "smaID", { value: smaID });
-    new cdk.CfnOutput(this, "phoneID", { value: phoneID });
-    new cdk.CfnOutput(this, "sipRuleID", { value: sipRuleID });
-    new cdk.CfnOutput(this, "sipRuleName", { value: chimeProviderProperties.sipRuleName });
+    new cdk.CfnOutput(this, 'region', {
+      value: this.region,
+      exportName: 'region',
+    });
+    new cdk.CfnOutput(this, 'inboundPhoneNumber', {
+      value: inboundPhoneNumber,
+      exportName: 'inboundPhoneNumber',
+    });
+    new cdk.CfnOutput(this, 'lambdaLog', {
+      value: thirdCall.logGroup.logGroupName,
+      exportName: 'lambdaLog',
+    });
+    new cdk.CfnOutput(this, 'lambdaARN', {
+      value: thirdCall.functionArn,
+      exportName: 'lambdaARN'
+    });
+    new cdk.CfnOutput(this, 'chimeProviderLog', {
+      value: chimeProviderLamba.logGroup.logGroupName,
+      exportName: 'chimeProviderLog'
+    });
+    new cdk.CfnOutput(this, "smaID", {
+      value: smaID,
+      exportName: 'smaID',
+    });
+    new cdk.CfnOutput(this, "phoneID", {
+      value: phoneID,
+      exportName: 'phoneID'
+    });
+    new cdk.CfnOutput(this, "sipRuleID", {
+      value: sipRuleID,
+      exportName: 'sipRuleID',
+    });
+    new cdk.CfnOutput(this, "sipRuleName", {
+      value: chimeProviderProperties.sipRuleName,
+      exportName: 'sipRuleName',
+    });
 
     /*
         // Create AppSync and database
