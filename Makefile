@@ -3,6 +3,7 @@ PHONENUM  := +14153687546
 STACKNAME := ThirdCallStack
 CDK-OUT   := cdk-outputs.json
 DUMMY     := $(shell touch ${CDK-OUT})
+OLDLOG	  := ./oldlogs/cdk-outputs-$(shell date +%FT%T%Z).json
 
 include ./chime-cdk-support/chime-cdk-support.mk
 
@@ -30,7 +31,7 @@ deploy: build
 keepdeploy: build
 	cdk deploy --outputs-file ./cdk-outputs.json --no-rollback --require-approval never
 
-destroy:
+destroy: oldlog
 	cdk destroy --force
 
 logs:
@@ -66,3 +67,5 @@ modules:
 git-update:
 	git submodule update --remote 
 
+oldlog:
+	cp cdk-outputs.json ${OLDLOG}

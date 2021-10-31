@@ -1,0 +1,14 @@
+{
+  "ThirdCallStack": {
+    "sipRuleID": "7853b9f1-fb76-4ee2-897f-e770c9fed543",
+    "inboundPhoneNumber": "+15052093401",
+    "sipRuleName": "ThirdCallStack",
+    "smaID": "ef9845fc-3187-4c85-bf2e-61f3baba64f3",
+    "lambdaARN": "arn:aws:lambda:us-west-2:497939524935:function:ThirdCallStack-thirdCallBEFCCCBB-pfLukiyOqW07",
+    "phoneID": "%2B15052093401",
+    "chimeProviderLog": "/aws/lambda/ThirdCallStack-chimeProviderLamba72B9587A-DiiblcGJVlJh",
+    "thirdCallInfoTable": "ThirdCallStack-callInfo84B39180-OGFP4NQAEYEN",
+    "region": "us-west-2",
+    "lambdaLog": "/aws/lambda/ThirdCallStack-thirdCallBEFCCCBB-pfLukiyOqW07"
+  }
+}
